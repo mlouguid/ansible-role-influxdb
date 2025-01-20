@@ -1,0 +1,9 @@
+# InfluxDB default settings
+influxdb_version: "2.7.1"  # Replace with the desired version
+influxdb_bucket: "setupvm"
+influxdb_org: "setupvm"
+influxdb_admin_user: "admin"
+influxdb_admin_password: "password"
+influxdb_retention_period: "30d"  # Retention period for the bucket
+influxdb_service_state: "started"
+influxdb_service_enabled: true

@@ -1,0 +1,36 @@
+---
+- name: Add InfluxDB GPG key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+
+- name: Add InfluxDB repository
+  apt_repository:
+    repo: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} stable"
+    state: present
+
+- name: Update APT cache
+  apt:
+    update_cache: yes
+
+- name: Install InfluxDB
+  apt:
+    name: influxdb2
+    state: present
+
+- name: Configure InfluxDB service
+  systemd:
+    name: influxdb
+    enabled: "{{ influxdb_service_enabled }}"
+    state: "{{ influxdb_service_state }}"
+
+- name: Initialize InfluxDB with bucket, org, and user
+  shell: |
+    influx setup --bucket "{{ influxdb_bucket }}" \
+    --org "{{ influxdb_org }}" \
+    --username "{{ influxdb_admin_user }}" \
+    --password "{{ influxdb_admin_password }}" \
+    --retention "{{ influxdb_retention_period }}" \
+    --force
+  args:
+    creates: /var/lib/influxdb2/configs
