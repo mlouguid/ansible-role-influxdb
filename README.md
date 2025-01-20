@@ -1,6 +1,6 @@
-<p align="center">
-  <img src="/static/img/influx-logo-cubo-dark.png" width="200">
-</p>
+#<p align="center">
+#  <img src="/static/img/influx-logo-cubo-dark.png" width="200">
+#</p>
 
 # InfluxDB Role
 
