@@ -2,7 +2,7 @@
  <img src="/static/img/influx.png" width="800">
 </p>
 
-# InfluxDB Role
+# InfluxDB V2 Role
 
 This role installs and securely configures InfluxDB v2 with the following:
 
