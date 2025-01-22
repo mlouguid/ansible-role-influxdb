@@ -1,45 +1,54 @@
 ---
-- name: Add InfluxDB GPG key
-  apt_key:
-    url: https://repos.influxdata.com/influxdb.key
-    state: present
+- name: Download InfluxDB GPG signing key
+  get_url:
+    url: https://repos.influxdata.com/influxdata-archive_compat.key
+    dest: /tmp/influxdata-archive_compat.key
+
+- name: Add InfluxDB GPG signing key
+  shell: |
+    cat /tmp/influxdata-archive_compat.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg > /dev/null
+  become: yes
 
 - name: Add InfluxDB repository
   apt_repository:
-    repo: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} stable"
+    repo: "deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/debian stable main"
     state: present
+  become: yes
 
-- name: Update APT cache
+- name: Update apt cache
   apt:
     update_cache: yes
+  become: yes
 
-- name: Install InfluxDB
+- name: Install InfluxDB and Python pip
   apt:
-    name: influxdb2
+    name:
+      - influxdb2
+      - python3-pip
     state: present
+  become: yes
 
-- name: Configure InfluxDB service
-  systemd:
-    name: influxdb
-    enabled: "{{ influxdb_service_enabled }}"
-    state: "{{ influxdb_service_state }}"
-
-- name: Deploy InfluxDB configuration from template
-  template:
-    src: templates/influxdb.conf.j2
+- name: Create InfluxDB configuration
+  ansible.builtin.template:
+    src: influxdb.conf.j2
     dest: /etc/influxdb/influxdb.conf
     owner: influxdb
     group: influxdb
-    mode: '0644'
+    mode: "0644"
   notify: Restart InfluxDB
 
-- name: Initialize InfluxDB with bucket, org, and user
-  shell: |
-    influx setup --bucket "{{ influxdb_bucket }}" \
-    --org "{{ influxdb_org }}" \
-    --username "{{ influxdb_admin_user }}" \
-    --password "{{ influxdb_admin_password }}" \
-    --retention "{{ influxdb_retention_period }}" \
-    --force
+- name: Enable and start InfluxDB service
+  ansible.builtin.systemd:
+    name: influxdb
+    enabled: yes
+    state: started
+
+- name: Setup InfluxDB 2.0
+  ansible.builtin.command: >
+    influx setup --username "{{ influxdb_admin_user }}" --password "{{ influxdb_admin_password }}"
+    --org "{{ influxdb_org }}" --bucket "{{ influxdb_bucket }}" --force
   args:
-    creates: /var/lib/influxdb2/configs
+    creates: /etc/influxdb/.setup
+  register: setup_result
+  failed_when: false
+  changed_when: false
