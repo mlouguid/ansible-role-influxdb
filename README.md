@@ -1,5 +1,5 @@
 <p align="center">
- <img src="/static/img/influx.png" width="550">
+ <img src="/static/img/influx.png" width="800">
 </p>
 
 # InfluxDB Role
