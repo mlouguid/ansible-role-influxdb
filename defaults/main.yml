@@ -4,6 +4,6 @@ influxdb_bucket: "setupvm"
 influxdb_org: "setupvm"
 influxdb_admin_user: "admin"
 influxdb_admin_password: "password"
-influxdb_retention_period: "30d"  # Retention period for the bucket
+# influxdb_retention_period: "30d"  # Retention period for the bucket
 influxdb_service_state: "started"
 influxdb_service_enabled: true
