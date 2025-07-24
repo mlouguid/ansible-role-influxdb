@@ -26,3 +26,10 @@ Include the role in your playbook:
 - hosts: all
   roles:
     - influxdb
+
+## Manual Installation
+
+```
+chmod +x influxdb2.sh
+./influxdb2.sh
+```
