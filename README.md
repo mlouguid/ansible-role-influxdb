@@ -26,6 +26,7 @@ Include the role in your playbook:
 - hosts: all
   roles:
     - influxdb
+```
 
 ## Manual Installation
 
